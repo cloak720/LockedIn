@@ -41,7 +41,10 @@ export const MAX_BODY_BYTES = 32_000;
 export const MAX_MESSAGES = 20;
 export const MAX_MESSAGE_CHARS = 2_000;
 const UPSTREAM_TIMEOUT_MS = 9_000; // Netlify sync functions have a 10 s budget
-const DEFAULT_MODEL = 'gemini-2.5-flash';
+// Free-tier, fast (thinking is near-off by default). If a model is retired (404),
+// the relay tries the next one, so a Google deprecation can't silently break the coach.
+const DEFAULT_MODEL = 'gemini-3.5-flash-lite';
+const FALLBACK_MODELS = ['gemini-3.1-flash-lite', 'gemini-3.6-flash'];
 const MODEL_RE = /^[a-z0-9.-]{3,60}$/;
 
 const json = (status: number, body: Record<string, unknown>) =>
@@ -131,24 +134,31 @@ export async function handleCoach(req: Request, deps: RelayDeps): Promise<Respon
   const remaining = Math.max(0, limit - used - 1);
 
   // 5. Ask Gemini (prompt built here, never taken from the client).
-  const model = deps.env.GEMINI_MODEL && MODEL_RE.test(deps.env.GEMINI_MODEL) ? deps.env.GEMINI_MODEL : DEFAULT_MODEL;
+  const preferred = deps.env.GEMINI_MODEL && MODEL_RE.test(deps.env.GEMINI_MODEL) ? deps.env.GEMINI_MODEL : DEFAULT_MODEL;
+  const models = [...new Set([preferred, DEFAULT_MODEL, ...FALLBACK_MODELS])];
+  const systemPrompt = buildSystemPrompt(facts);
+  const contents = messages.map((m) => ({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.content }] }));
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), UPSTREAM_TIMEOUT_MS);
   try {
-    const res = await deps.fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-      method: 'POST',
-      signal: ctrl.signal,
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: buildSystemPrompt(facts) }] },
-        contents: messages.map((m) => ({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.content }] })),
-        generationConfig: {
-          temperature: 0.8,
-          maxOutputTokens: 600,
-          ...(model.startsWith('gemini-2.5-flash') ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
-        },
-      }),
-    });
+    let res!: Response;
+    for (const model of models) {
+      res = await deps.fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: 'POST',
+        signal: ctrl.signal,
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents,
+          generationConfig: {
+            temperature: 0.8,
+            maxOutputTokens: 600,
+            ...(model.startsWith('gemini-2.5-flash') ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+          },
+        }),
+      });
+      if (res.status !== 404) break; // only a retired/unknown model moves on to the next one
+    }
     const data = (await res.json().catch(() => ({}))) as {
       candidates?: { content?: { parts?: { text?: unknown }[] } }[];
     };
@@ -156,12 +166,14 @@ export async function handleCoach(req: Request, deps: RelayDeps): Promise<Respon
     const text = Array.isArray(parts) ? parts.map((p) => (typeof p?.text === 'string' ? p.text : '')).join('').trim() : '';
     if (!res.ok || !text) {
       await deps.store.set(userKey, String(used)); // don't charge the user for our failure
-      return json(502, { error: res.status === 429 ? 'busy' : 'upstream', remaining: remaining + 1 });
+      // `code` is only the upstream HTTP status (never the key or any content), for diagnosis.
+      return json(502, { error: res.status === 429 ? 'busy' : 'upstream', code: res.status, remaining: remaining + 1 });
     }
     return json(200, { text: text.slice(0, 4000), remaining });
-  } catch {
+  } catch (e) {
     await deps.store.set(userKey, String(used));
-    return json(502, { error: 'upstream', remaining: remaining + 1 });
+    const code = e instanceof Error && e.name === 'AbortError' ? 'timeout' : 'network';
+    return json(502, { error: 'upstream', code, remaining: remaining + 1 });
   } finally {
     clearTimeout(timer);
   }

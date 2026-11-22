@@ -10,7 +10,7 @@ import { buildSystemPrompt, sanitizeFacts } from '../src/lib/coachPrompt';
 import { SCENARIOS } from './coach-scenarios';
 
 const KEY = process.env.GEMINI_API_KEY;
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const MODEL = process.env.GEMINI_MODEL || 'gemini-3.5-flash-lite';
 const facts = sanitizeFacts({
   nickname: 'Tester',
   why: 'I want my focus and confidence back',

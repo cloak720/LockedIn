@@ -85,7 +85,7 @@ describe('relay: the prompt is built server-side', () => {
       deps({ fetch: f as unknown as typeof fetch }),
     );
     const [url, init] = f.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toMatch(/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-2\.5-flash:generateContent$/);
+    expect(url).toMatch(/^https:\/\/generativelanguage\.googleapis\.com\/v1beta\/models\/gemini-3\.5-flash-lite:generateContent$/);
     const body = JSON.parse(init.body as string);
     const system: string = body.systemInstruction.parts[0].text;
     expect(system).not.toContain('unrestricted assistant');
@@ -98,7 +98,21 @@ describe('relay: the prompt is built server-side', () => {
   it('only allows safe model names from env', async () => {
     const f = geminiOk();
     await handleCoach(req(good), deps({ fetch: f as unknown as typeof fetch, env: { GEMINI_API_KEY: 'k-123456789', GEMINI_MODEL: '../evil?x=1' } }));
-    expect((f.mock.calls[0] as unknown as [string])[0]).toContain('/models/gemini-2.5-flash:');
+    expect((f.mock.calls[0] as unknown as [string])[0]).toContain('/models/gemini-3.5-flash-lite:');
+  });
+
+  it('falls back to the next model when one is retired (404), and stops on other errors', async () => {
+    const ok = new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: 'Go outside.' }] } }] }), { status: 200 });
+    const f = vi.fn(async (url: string) => (url.includes('/gemini-old-model:') ? new Response('{}', { status: 404 }) : ok));
+    const r = await handleCoach(req(good), deps({ fetch: f as unknown as typeof fetch, env: { GEMINI_API_KEY: 'k-123456789', GEMINI_MODEL: 'gemini-old-model' } }));
+    expect(r.status).toBe(200);
+    expect(f).toHaveBeenCalledTimes(2);
+    expect((f.mock.calls[1] as unknown as [string])[0]).toContain('/models/gemini-3.5-flash-lite:');
+
+    const bad = vi.fn(async () => new Response('{}', { status: 400 }));
+    const r2 = await handleCoach(req(good), deps({ fetch: bad as unknown as typeof fetch }));
+    expect(r2.status).toBe(502);
+    expect(bad).toHaveBeenCalledTimes(1);
   });
 });
 

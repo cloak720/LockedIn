@@ -25,7 +25,7 @@ export const PROVIDERS: Record<Provider, { name: string; defaultModel: string; k
   },
   gemini: {
     name: 'Your own Google Gemini key',
-    defaultModel: 'gemini-2.5-flash',
+    defaultModel: 'gemini-3.5-flash-lite',
     keyUrl: 'https://aistudio.google.com/apikey',
     note: 'Unlimited, using your own free key. Requests go straight from your device to Google.',
   },
