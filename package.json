@@ -1,0 +1,33 @@
+{
+  "name": "lockedin",
+  "private": true,
+  "version": "0.3.0",
+  "description": "LockedIn - a free, private, local-first anti-porn / NoFap recovery companion.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@fontsource/anton": "5.3.0",
+    "@fontsource/dm-mono": "5.3.0",
+    "@fontsource/zen-kaku-gothic-new": "5.3.1",
+    "canvas-confetti": "1.9.3",
+    "framer-motion": "11.11.17",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/canvas-confetti": "1.6.4",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "@vitejs/plugin-react": "4.7.0",
+    "typescript": "5.6.3",
+    "vite": "6.4.6",
+    "vitest": "4.1.12"
+  }
+}
