@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex" />
+    <title>LockedIn · Privacy policy</title>
+    <link rel="stylesheet" href="./assets/privacy.css" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">LockedIn</p>
+      <h1>Privacy policy</h1>
+      <p class="meta">Last updated: 22 November 2026</p>
+
+      <h2>The short version</h2>
+      <ul>
+        <li><b>No account.</b> We never ask for your name, email or phone number.</li>
+        <li><b>Your data lives on your phone.</b> Streaks, check-ins, slips, journal notes and assessment answers are stored only in the app's storage on your device. We have no database and cannot see them.</li>
+        <li><b>Optional encryption.</b> With a passcode, everything on the device is encrypted (AES-256-GCM).</li>
+        <li><b>The AI coach is opt-in.</b> Nothing is sent anywhere unless you turn it on.</li>
+        <li><b>No analytics, no trackers, no selling data. Ever.</b></li>
+      </ul>
+
+      <h2>What leaves your phone</h2>
+      <h3>1. Loading the app</h3>
+      <p>Your phone downloads the app's files from our host (Netlify), like any website. Hosts log standard request data (IP address, time, browser) for security and operations.</p>
+
+      <h3>2. The AI coach, only if you turn it on</h3>
+      <p>There are three coach options. You choose one in Settings:</p>
+      <ul>
+        <li><b>Offline coach:</b> runs entirely on your phone. Nothing is sent.</li>
+        <li><b>LockedIn AI (free):</b> when you've turned it on and send a message, the app sends your recent chat messages and a short summary (nickname, streak, tier, goal, top triggers, riskiest time of day, urge battle counts, assessment score, and when/why your last slip happened plus your plan) to our relay, which forwards it to <b>Google Gemini</b> and returns the reply. <b>Your journal text, check-in notes and slip stories are never sent.</b> The relay does not store or log your messages. To enforce the fair daily limit it keeps a counter per day keyed by a salted, daily-rotating hash of your IP address; raw IP addresses are not stored, and counters expire with the day.</li>
+        <li><b>Your own API key</b> (Gemini, Groq or OpenRouter): messages go directly from your phone to that provider. We never see them.</li>
+      </ul>
+      <p>AI providers process messages under their own terms. On Google's free tier, Google may use prompts and responses to improve its products, and human reviewers may read them. Don't share details that identify you in the chat.</p>
+
+      <h3>3. The daily ad</h3>
+      <p>The app shows at most one ad per day. If a third-party ad network is added in the future, this policy will be updated before it goes live, and ads will never be shown during urge or slip flows.</p>
+
+      <h2>Your control</h2>
+      <ul>
+        <li>Turn the AI coach off at any time in Settings → AI coach.</li>
+        <li>Export or import an (optionally encrypted) backup in Settings → Backup &amp; data.</li>
+        <li>Delete everything instantly in Settings → Backup &amp; data → Delete everything. Uninstalling the app or clearing site data also deletes it.</li>
+      </ul>
+
+      <h2>Children</h2>
+      <p>LockedIn is intended for people aged 17 and over.</p>
+
+      <h2>Safety</h2>
+      <p>LockedIn is a self-help tool, not medical care. If you are in crisis, contact local emergency services or find a free helpline at <a href="https://findahelpline.com" rel="noopener noreferrer">findahelpline.com</a>.</p>
+
+      <h2>Open source</h2>
+      <p>The full source code is public, so anyone can verify these claims: <a href="https://github.com/cloak720/LockedIn" rel="noopener noreferrer">github.com/cloak720/LockedIn</a>. Questions or concerns: open an issue there, or report security problems privately through GitHub's "Report a vulnerability".</p>
+
+      <p class="back"><a href="./">← Back to the app</a></p>
+    </main>
+  </body>
+</html>

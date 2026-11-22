@@ -12,7 +12,7 @@ describe('sanitizeState', () => {
       expect(s.v).toBe(1);
       expect(s.profile).toBeNull();
       expect(s.relapses).toEqual([]);
-      expect(s.settings.provider).toBe('offline');
+      expect(s.settings.provider).toBe('lockedin');
     }
   });
 
@@ -51,7 +51,7 @@ describe('sanitizeState', () => {
     expect(a.dims.control).toBe(100);
     expect(a.dims.frequency).toBe(0);
     expect(a.answers).toEqual({ f_freq: 4 });
-    expect(s.settings.provider).toBe('offline');
+    expect(s.settings.provider).toBe('lockedin');
     expect(s.settings.autoLockSec).toBe(60);
   });
 
@@ -95,6 +95,18 @@ describe('sanitizeState', () => {
     expect(s.settings.apiKeys.gemini).toBe('AIzaGoodKey123');
     expect(s.settings.models.gemini).toBeUndefined();
     expect(s.settings.models.groq).toBe('llama-3.3-70b-versatile');
+  });
+
+  it('migrates old offline-by-default users to the built-in coach, without consent', () => {
+    const old = clean({ settings: { provider: 'offline', apiKeys: {} } });
+    expect(old.settings.provider).toBe('lockedin');
+    expect(old.settings.aiConsent).toBe(false);
+    // someone who explicitly chose offline after the update (aiConsent present) stays offline
+    expect(clean({ settings: { provider: 'offline', aiConsent: false } }).settings.provider).toBe('offline');
+    // users with their own keys keep their setup
+    expect(clean({ settings: { provider: 'offline', apiKeys: { gemini: 'AIzaGoodKey123' } } }).settings.provider).toBe('offline');
+    expect(clean({ settings: { provider: 'lockedin', aiConsent: true } }).settings.aiConsent).toBe(true);
+    expect(clean({ settings: { aiConsent: 'yes' } }).settings.aiConsent).toBe(false);
   });
 
   it('MODEL_RE', () => {

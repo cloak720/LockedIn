@@ -3,32 +3,17 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import confetti from '../lib/confetti';
 import { useNow } from '../lib/hooks';
 import { analyze } from '../lib/insights';
-import { DAILY_LINES, dailyPick, MOOD_SCALE, pick, TICKER, urgeLabel } from '../lib/memes';
+import { DAILY_LINES, dailyPick, MOOD_SCALE, pick, urgeLabel } from '../lib/memes';
 import { buzz, dayKey, saveCheckIn, setState, useAppState } from '../lib/store';
 import { DAY, fmtDuration, nextRank, rankFor, recoveryRate, split, streakMs, totalCleanMs, type Rank } from '../lib/streak';
-import { Btn, Card, Overlay, Page, Sec, Stamp, TierLadder, TierMeter } from './ui';
+import { Btn, Overlay, Page, Sec, Stamp, TierLadder, TierMeter } from './ui';
 
 const AURA_LINES = ['+1000 aura', 'aura farming detected', 'mogging the sun', 'W', '+∞ aura', 'built different', 'locked in', 'gigachad energy'];
 
 /* ------------------------------------------------------------------ */
-/*  Station-board ticker                                               */
-/* ------------------------------------------------------------------ */
-function Ticker({ extra }: { extra: string[] }) {
-  const line = [...extra, ...TICKER].map((t) => `${t}  ◆  `).join('');
-  return (
-    <div className="ticker" aria-hidden="true">
-      <div>
-        {line}
-        {line}
-      </div>
-    </div>
-  );
-}
-
-/* ------------------------------------------------------------------ */
 /*  The poster card: red sun, giant day count, tier, live clock         */
 /* ------------------------------------------------------------------ */
-function Poster({ ms }: { ms: number }) {
+function Poster({ ms, badge }: { ms: number; badge?: string }) {
   const days = Math.floor(ms / DAY);
   const rank = rankFor(days);
   const nxt = nextRank(days);
@@ -54,7 +39,7 @@ function Poster({ ms }: { ms: number }) {
     <section className="card poster">
       <div className="poster-head">
         <span className="badge shu">Tier {String(rank.tier).padStart(2, '0')} / 09</span>
-        <span className="mono small muted">Days locked in</span>
+        {badge && <span className="badge">{badge}</span>}
       </div>
 
       <div className="poster-art">
@@ -248,11 +233,7 @@ export default function Home({ onPanic, onRelapse }: { onPanic: () => void; onRe
     return { day: date.getDate(), undefeated: s.streakStart <= nov1 };
   }, [date.getMonth(), date.getDate(), s.streakStart]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const tickerExtra = [
-    `${s.profile?.nickname ?? 'YOU'}: TIER ${rank.tier} ${rank.name}`,
-    nnn ? `NNN DAY ${nnn.day}/30` : '',
-    `${ins.urgesWon} URGES BONKED`,
-  ].filter(Boolean);
+  const [showAllTiers, setShowAllTiers] = useState(false);
 
   return (
     <Page>
@@ -262,38 +243,24 @@ export default function Home({ onPanic, onRelapse }: { onPanic: () => void; onRe
           No.{String(days).padStart(4, '0')} · {dateStr} {weekday}
         </span>
       </header>
-      <Ticker extra={tickerExtra} />
 
       <div className="greet">
         <p className="mono small muted">yo, {s.profile?.nickname}</p>
         <h2>{line}</h2>
       </div>
 
-      {(ins.dangerNow || nnn) && (
-        <div className="strips">
-          {ins.dangerNow && (
-            <motion.div className="strip red" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
-              <span className="mono small">Danger window</span>
-              <span>{ins.dangerNow}</span>
-            </motion.div>
-          )}
-          {nnn && (
-            <div className="strip">
-              <span className="mono small">No Nut November</span>
-              <b>
-                Day {nnn.day}/30 · {nnn.undefeated ? 'Undefeated' : 'Late joiner, still valid'}
-              </b>
-            </div>
-          )}
-        </div>
+      {ins.dangerNow && (
+        <motion.div className="strip red" initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
+          <span className="mono small">Danger window</span>
+          <span>{ins.dangerNow}</span>
+        </motion.div>
       )}
 
       <div className="grid2">
         <div className="col">
-          <Poster ms={ms} />
-
+          {/* Emergency button first: it must be reachable the moment the app opens. */}
           <motion.button className="jail" onClick={onPanic} whileTap={{ scale: 0.98 }} aria-label="Horny jail: get help with an urge right now">
-            <Stamp text="Bonk" size={56} rotate={-6} />
+            <Stamp text="Bonk" size={52} rotate={-6} />
             <span className="jail-text">
               <b>Send me to horny jail</b>
               <small>Tempted? Tap before you goon.</small>
@@ -302,12 +269,14 @@ export default function Home({ onPanic, onRelapse }: { onPanic: () => void; onRe
               →
             </motion.span>
           </motion.button>
+
+          <Poster ms={ms} badge={nnn ? `NNN ${nnn.day}/30${nnn.undefeated ? ' · undefeated' : ''}` : undefined} />
         </div>
 
         <div className="col">
           <CheckInCard />
 
-          <Card>
+          <section className="section">
             <Sec no="02" title="Stats" />
             <div className="stat-grid">
               <div className="stat">
@@ -327,24 +296,26 @@ export default function Home({ onPanic, onRelapse }: { onPanic: () => void; onRe
                 <b>{ins.urgesWon}</b>
               </div>
             </div>
-            <p className="small dim">A slip resets the streak, never your total clean time. Progress is not erased.</p>
-          </Card>
+          </section>
 
-          <Card>
+          <section className="section">
             <Sec no="03" title="The ladder" aside={<span className="mono small muted">Gooner → Gigachad</span>} />
-            <TierLadder tier={rank.tier} days={ms / DAY} />
-          </Card>
+            <TierLadder tier={rank.tier} days={ms / DAY} compact={!showAllTiers} />
+            <button className="link-btn" onClick={() => setShowAllTiers(!showAllTiers)}>
+              {showAllTiers ? 'Show less' : 'See all 10 tiers'}
+            </button>
+          </section>
 
           {s.profile?.why && (
-            <Card className="inset">
+            <section className="section">
               <Sec no="04" title="Your why" />
               <p className="why">“{s.profile.why}”</p>
-            </Card>
+            </section>
           )}
 
           <button className="slip" onClick={onRelapse}>
-            <b>Fell off? Log a slip →</b>
-            <span className="small muted">Fall seven times, stand up eight. Your total progress stays.</span>
+            <span>Fell off? Log a slip →</span>
+            <span className="small muted">Your total progress stays.</span>
           </button>
         </div>
       </div>

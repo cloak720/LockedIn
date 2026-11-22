@@ -17,7 +17,7 @@ import { sanitizeState } from './sanitize';
 /*  Types                                                              */
 /* ------------------------------------------------------------------ */
 
-export type Provider = 'gemini' | 'groq' | 'openrouter' | 'offline';
+export type Provider = 'lockedin' | 'gemini' | 'groq' | 'openrouter' | 'offline';
 
 export interface Profile {
   nickname: string;
@@ -63,6 +63,8 @@ export interface Settings {
   apiKeys: Partial<Record<Provider, string>>;
   models: Partial<Record<Provider, string>>;
   reduceMotion: boolean;
+  /** User explicitly agreed to send coach messages to the cloud AI (LockedIn relay). */
+  aiConsent: boolean;
   /** seconds in background before auto-lock (0 = immediately, -1 = never). Only used with a passcode. */
   autoLockSec: number;
 }
@@ -105,7 +107,7 @@ export const defaultState = (): AppState => ({
   checkins: [],
   urges: [],
   chat: [],
-  settings: { provider: 'offline', apiKeys: {}, models: {}, reduceMotion: false, autoLockSec: 60 },
+  settings: { provider: 'lockedin', apiKeys: {}, models: {}, reduceMotion: false, aiConsent: false, autoLockSec: 60 },
   lastAdDay: null,
   milestonesSeen: [],
 });

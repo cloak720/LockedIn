@@ -37,8 +37,8 @@
   --f-mono: 'DM Mono', ui-monospace, 'Cascadia Mono', monospace;
 
   --gutter: 16px;
-  --gap: 16px;
-  --pad: 16px;
+  --gap: 24px;
+  --pad: 18px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
   color-scheme: light;
@@ -65,8 +65,8 @@
 @media (min-width: 860px) {
   :root {
     --gutter: 28px;
-    --gap: 20px;
-    --pad: 20px;
+    --gap: 28px;
+    --pad: 22px;
   }
 }
 
@@ -778,13 +778,13 @@ input[type='checkbox'] {
   position: relative;
   container-type: inline-size;
   width: 100%;
-  aspect-ratio: 1 / 0.84;
+  aspect-ratio: 1 / 0.62; /* short enough that the urge button stays above the fold on phones */
 }
 .sun {
   position: absolute;
   top: 0;
-  right: 0;
-  width: 76%;
+  right: 4%;
+  width: 60%;
   aspect-ratio: 1;
   border-radius: 50%;
   border: 0;
@@ -812,13 +812,13 @@ input[type='checkbox'] {
   line-height: 0.8;
   color: var(--ink);
   pointer-events: none;
-  font-size: 62cqw;
+  font-size: 50cqw;
 }
 .poster-num.len3 {
-  font-size: 48cqw;
+  font-size: 40cqw;
 }
 .poster-num.len4 {
-  font-size: 36cqw;
+  font-size: 30cqw;
 }
 .poster-meta {
   display: flex;
@@ -834,7 +834,7 @@ input[type='checkbox'] {
 }
 .poster-title {
   margin-top: 4px;
-  font-size: clamp(34px, 9vw, 52px);
+  font-size: clamp(30px, 8vw, 48px);
 }
 
 /* Gooner → Gigachad meter */
@@ -1055,26 +1055,168 @@ input[type='checkbox'] {
   line-height: 1.45;
 }
 
+/* quiet, but always findable */
 .slip {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 14px 16px;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px 0;
   text-align: left;
   background: transparent;
-  border: 1.5px dashed var(--ink);
+  border: 0;
+  border-top: 1px solid var(--hair);
   cursor: pointer;
-}
-.slip b {
-  font-family: var(--f-display);
-  font-weight: 400;
-  font-size: 20px;
+  font-family: var(--f-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 .slip:hover {
-  border-color: var(--shu);
   color: var(--shu);
+}
+
+/* borderless content section (less boxy than .card) */
+.section {
+  min-width: 0;
+}
+.link-btn {
+  margin-top: 10px;
+  padding: 6px 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font-family: var(--f-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.link-btn:hover {
+  color: var(--shu);
+}
+
+.greet h2 {
+  font-size: clamp(22px, 5.5vw, 30px);
+}
+
+/* page header used by Coach / Settings / Radar */
+.page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.page-head h1 {
+  font-size: clamp(36px, 9vw, 56px);
+}
+
+/* collapsible sections (Settings) */
+.folds {
+  display: flex;
+  flex-direction: column;
+  border-top: 1.5px solid var(--ink);
+}
+.fold {
+  border-bottom: 1.5px solid var(--ink);
+}
+.fold > summary {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto 18px;
+  align-items: baseline;
+  gap: 10px;
+  min-height: 56px;
+  padding: 16px 0;
+  cursor: pointer;
+}
+.fold > summary::-webkit-details-marker {
+  display: none;
+}
+.fold .no {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--shu);
+}
+.fold .t {
+  font-family: var(--f-display);
+  font-size: 22px;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+.fold .hint {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40vw;
+}
+.fold .chev {
+  position: relative;
+  width: 14px;
+  height: 14px;
+  align-self: center;
+}
+.fold .chev::before,
+.fold .chev::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 6px;
+  height: 2px;
+  background: var(--ink);
+  transition: transform 0.15s;
+}
+.fold .chev::after {
+  transform: rotate(90deg);
+}
+.fold[open] .chev::after {
+  transform: rotate(0deg);
+}
+.fold-body {
+  padding: 0 0 22px 42px;
+}
+@media (max-width: 420px) {
+  .fold-body {
+    padding-left: 0;
+  }
+}
+.settings .folds {
+  max-width: 720px;
+}
+.setting-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  background: var(--paper2);
+}
+
+/* coach consent */
+.consent h2 {
+  margin: 4px 0 12px;
+}
+.consent .facts {
+  margin: 0 0 16px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+.consent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .tierup-num {

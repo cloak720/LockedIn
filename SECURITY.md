@@ -1,12 +1,15 @@
 # Security & Privacy
 
-LockedIn handles some of the most sensitive data a person can have. The design goal is simple: **there is nothing to breach, because there is no server**, and what lives on the device is protected.
+LockedIn handles some of the most sensitive data a person can have. The design goal is simple: **there is no database to breach**, nothing personal is stored server-side, and what lives on the device is protected.
 
 ## Architecture
 
-- **No backend, no accounts, no analytics, no trackers, no third-party scripts.** The app is static files.
+- **No accounts, no database, no analytics, no trackers, no third-party scripts.** The app is static files plus one small serverless function (the AI relay).
 - All user data lives in the browser's `localStorage` on the user's own device.
-- The only outbound network calls are (a) loading the app itself and (b) the AI coach, which goes **directly** from the device to the provider the user chose (Google Gemini, Groq or OpenRouter) over HTTPS, with the user's own key.
+- The only outbound network calls are (a) loading the app itself and (b) the AI coach, **only if the user opts in**:
+  - **LockedIn AI**: chat messages + a short summary go to the relay (`/api/coach`), which forwards them to Google Gemini with the server-held key. Journal text, notes and slip stories are never sent.
+  - **Own key**: messages go directly from the device to the chosen provider (Gemini, Groq or OpenRouter).
+  - Messages that match crisis phrases are answered on-device with helpline information and are never sent to any AI.
 - Fonts are bundled locally. No requests to Google Fonts or any CDN.
 
 ## Protections
@@ -23,9 +26,11 @@ LockedIn handles some of the most sensitive data a person can have. The design g
 | **Backups** | API keys are never exported. Backups can be password-encrypted (same AES-GCM/PBKDF2 scheme). Imports can never replace the device's API keys. |
 | **AI calls** | Hard-coded HTTPS endpoints, `credentials: 'omit'`, `referrerPolicy: 'no-referrer'`, `cache: 'no-store'`, redirects refused, 30 s timeout, response size cap, model names validated against a strict pattern, keys restricted to printable ASCII (no header injection). User-written text in the AI prompt is fenced off as data to reduce prompt injection. |
 | **Spellcheck leakage** | Cloud spellcheck is disabled on private text fields (some browsers send typed text to their servers). |
+| **AI relay** | `src/server/relay.ts`. Same-origin requests only (Origin allow-list); POST only; 32 KB body cap; max 20 messages × 2,000 chars; roles validated. The system prompt is built server-side from validated facts, so the relay cannot be used as a general-purpose Gemini proxy. Fair use: per-person daily limit plus a global daily cap; people are identified only by a salted, daily-rotating SHA-256 hash of their IP (raw IPs never stored); counters are refunded when the upstream AI fails. The Gemini key lives only in a Netlify environment variable. **No message content is stored or logged.** Over the limit, the app falls back to the offline coach (never a paywall). Covered by `tests/relay.test.ts`. |
 | **Service worker** | Caches only same-origin static files with successful responses. Never touches user data or API traffic. |
 | **Dev server** | Bound to `localhost` only. |
-| **Dependencies** | 5 runtime dependencies, versions pinned exactly. `npm audit`: 0 known vulnerabilities at release. |
+| **Dependencies** | Runtime dependencies pinned to exact versions; new versions are only adopted once they are at least 2 weeks old. `npm audit`: 0 known vulnerabilities at release. |
+| **Releases** | `npm run release` runs all tests, builds with the origin-locked CSP, deploys, verifies the live site (status, new build served, CSP header, no injected scripts, relay reachable) and **automatically restores the previous deploy** if any check fails. |
 
 ## Deployment headers
 
@@ -61,7 +66,8 @@ No app is "unbreachable". LockedIn defends well against: server breaches (there 
 - **Weak passcodes**: an attacker who copies the encrypted data can try guesses offline, bypassing the in-app lockout. A 6-digit PIN can be cracked by a determined attacker; a long passphrase cannot in practice.
 - **Forgotten passcodes**: data is unrecoverable by design.
 - **Without a passcode**, data is stored unencrypted in the browser.
-- **AI providers**: chats sent to the AI coach are processed by that provider under their privacy policy. The offline coach sends nothing.
+- **AI providers**: chats sent to the AI coach are processed by that provider under their privacy policy. On Google's free tier, prompts may be used to improve Google's products and may be read by human reviewers; moving the relay to a paid tier avoids this. The offline coach sends nothing.
+- **Relay limits are IP-based**: people sharing one network (e.g. a college Wi-Fi) share a daily limit; a determined attacker rotating IPs can consume the global cap (which bounds cost) but cannot read anyone's data.
 - **Clearing browser data** deletes the app's data. Use encrypted backups.
 
 ## Reporting a vulnerability

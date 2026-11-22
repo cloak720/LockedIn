@@ -1,0 +1,72 @@
+:root {
+  --paper: #efe8da;
+  --ink: #171513;
+  --muted: #6b6359;
+  --shu: #d4372a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #131110;
+    --ink: #ece4d4;
+    --muted: #a0968a;
+    --shu: #e2483a;
+    color-scheme: dark;
+  }
+}
+html {
+  scrollbar-gutter: stable;
+}
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 16px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+main {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+.kicker,
+.meta {
+  font: 12px/1.4 ui-monospace, 'Cascadia Mono', monospace;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0;
+}
+.kicker {
+  color: var(--shu);
+}
+h1 {
+  font-size: clamp(32px, 8vw, 48px);
+  line-height: 1.05;
+  margin: 6px 0 4px;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+h2 {
+  margin: 32px 0 8px;
+  padding-top: 12px;
+  border-top: 1.5px solid var(--ink);
+  font-size: 20px;
+  text-transform: uppercase;
+}
+h3 {
+  margin: 20px 0 4px;
+  font-size: 16px;
+}
+ul {
+  padding-left: 20px;
+}
+li {
+  margin: 6px 0;
+}
+a {
+  color: var(--shu);
+  text-underline-offset: 3px;
+}
+.back {
+  margin-top: 40px;
+}

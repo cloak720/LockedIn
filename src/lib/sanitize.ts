@@ -8,7 +8,7 @@
 import { DIM_INFO, LEVELS, levelFor, QUESTIONS, type AssessmentResult, type DimKey } from './assessment';
 import type { AppState, ChatMsg, CheckIn, Provider, Relapse, Settings, UrgeLog } from './store';
 
-const PROVIDERS: Provider[] = ['gemini', 'groq', 'openrouter', 'offline'];
+const PROVIDERS: Provider[] = ['lockedin', 'gemini', 'groq', 'openrouter', 'offline'];
 const MIN_T = 946684800000; // 2000-01-01
 const MAX_T = 4102444800000; // 2100-01-01
 export const MODEL_RE = /^[A-Za-z0-9._:/-]{1,100}$/;
@@ -110,8 +110,13 @@ export function sanitizeSettings(x: unknown, base: Settings): Settings {
     const m = str(md[p], 100).trim();
     if (m && MODEL_RE.test(m)) models[p] = m;
   }
+  let provider: Provider = PROVIDERS.includes(o.provider as Provider) ? (o.provider as Provider) : base.provider;
+  // Migration: data from before the built-in coach existed defaulted to 'offline'. Move those users to
+  // the built-in coach; it still sends nothing until they explicitly opt in (aiConsent).
+  if (o.aiConsent === undefined && provider === 'offline' && Object.keys(apiKeys).length === 0) provider = 'lockedin';
   return {
-    provider: PROVIDERS.includes(o.provider as Provider) ? (o.provider as Provider) : base.provider,
+    provider,
+    aiConsent: o.aiConsent === true,
     apiKeys,
     models,
     reduceMotion: typeof o.reduceMotion === 'boolean' ? o.reduceMotion : base.reduceMotion,

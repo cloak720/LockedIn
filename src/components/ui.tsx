@@ -90,6 +90,33 @@ export function Sec({ no, title, aside }: { no: string; title: string; aside?: R
   );
 }
 
+/** Collapsible settings-style section. Native <details>, so it's accessible and works without JS. */
+export function Fold({
+  no,
+  title,
+  hint,
+  open = false,
+  children,
+}: {
+  no: string;
+  title: string;
+  hint?: string;
+  open?: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <details className="fold" open={open}>
+      <summary>
+        <span className="no">{no}</span>
+        <span className="t">{title}</span>
+        {hint && <span className="hint">{hint}</span>}
+        <span className="chev" aria-hidden="true" />
+      </summary>
+      <div className="fold-body">{children}</div>
+    </details>
+  );
+}
+
 /** Minimal line icons for the tab bar. */
 export function Icon({ name }: { name: 'home' | 'radar' | 'coach' | 'settings' }) {
   const p = { fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'square' as const, strokeLinejoin: 'miter' as const };
@@ -148,10 +175,12 @@ export function TierMeter({ tier }: { tier: number }) {
 }
 
 /** Full ladder list: every tier, what it takes, and where you are. */
-export function TierLadder({ tier, days }: { tier: number; days: number }) {
+export function TierLadder({ tier, days, compact = false }: { tier: number; days: number; compact?: boolean }) {
+  // compact: just the previous, current and next tier
+  const shown = compact ? RANKS.filter((r) => Math.abs(r.tier - tier) <= 1) : RANKS;
   return (
     <ol className="ladder">
-      {[...RANKS].reverse().map((r) => {
+      {[...shown].reverse().map((r) => {
         const state = r.tier < tier ? 'done' : r.tier === tier ? 'now' : 'locked';
         return (
           <li key={r.tier} className={state}>

@@ -1,8 +1,9 @@
 // LockedIn service worker: app-shell caching so the app works fully offline.
 // It only ever caches our own static files. User data lives in localStorage
 // (encrypted when a passcode is set) and is never touched here.
-// Bump CACHE when you ship a release to force clients to refresh.
-const CACHE = 'lockedin-v0.3.0';
+// The cache id below is stamped with a unique value on every production build
+// (scripts/stamp-sw.mjs), so each release gets a fresh cache automatically.
+const CACHE = 'lockedin-__BUILD_ID__';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
