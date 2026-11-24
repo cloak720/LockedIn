@@ -301,9 +301,9 @@ export default function Home({ onPanic, onRelapse }: { onPanic: () => void; onRe
           <section className="section">
             <Sec no="03" title="The ladder" aside={<span className="mono small muted">Gooner → Gigachad</span>} />
             <TierLadder tier={rank.tier} days={ms / DAY} compact={!showAllTiers} />
-            <button className="link-btn" onClick={() => setShowAllTiers(!showAllTiers)}>
-              {showAllTiers ? 'Show less' : 'See all 10 tiers'}
-            </button>
+            <Btn variant="ghost sm" aria-expanded={showAllTiers} onClick={() => setShowAllTiers(!showAllTiers)}>
+              {showAllTiers ? 'Show less ↑' : 'See all 10 tiers ↓'}
+            </Btn>
           </section>
 
           {s.profile?.why && (
@@ -314,8 +314,13 @@ export default function Home({ onPanic, onRelapse }: { onPanic: () => void; onRe
           )}
 
           <button className="slip" onClick={onRelapse}>
-            <span>Fell off? Log a slip →</span>
-            <span className="small muted">Your total progress stays.</span>
+            <span>
+              <b>Fell off? Log a slip</b>
+              <small>Your total progress stays.</small>
+            </span>
+            <span className="go-dot" aria-hidden="true">
+              →
+            </span>
           </button>
         </div>
       </div>

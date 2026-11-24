@@ -169,7 +169,12 @@ export default function Coach({ goSettings }: { goSettings: () => void }) {
           Send
         </Btn>
       </form>
-      <p className="dim small center mono">Lock is an AI, not a therapist. In a crisis: findahelpline.com</p>
+      <div className="row wrap" style={{ justifyContent: 'center', gap: 10 }}>
+        <span className="dim small">Lock is an AI, not a therapist.</span>
+        <a className="btn ghost sm" href="https://findahelpline.com" target="_blank" rel="noopener noreferrer">
+          In a crisis? Find a helpline ↗
+        </a>
+      </div>
     </Page>
   );
 }

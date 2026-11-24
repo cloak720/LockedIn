@@ -244,7 +244,7 @@ export default function PanicMode({ onClose, onRelapse, onCoach }: { onClose: ()
                 <span className="mono small">Step zero</span>
                 <span>Stand up and walk into a different room. Right now. Then pick a weapon.</span>
               </div>
-              <div className="plist">
+              <div className="plist actions">
                 {TOOLS.map((t, i) => (
                   <motion.button key={t.id} onClick={() => open(t.id)} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05 }}>
                     <span className="n">0{i + 1}</span>
@@ -252,7 +252,7 @@ export default function PanicMode({ onClose, onRelapse, onCoach }: { onClose: ()
                       <b>{t.name}</b>
                       <span className="small muted">{t.desc}</span>
                     </span>
-                    <span className="go" aria-hidden="true">
+                    <span className="go-dot" aria-hidden="true">
                       →
                     </span>
                   </motion.button>
@@ -263,7 +263,7 @@ export default function PanicMode({ onClose, onRelapse, onCoach }: { onClose: ()
                     <b>Ask the coach</b>
                     <span className="small muted">AI coach that knows your triggers</span>
                   </span>
-                  <span className="go" aria-hidden="true">
+                  <span className="go-dot" aria-hidden="true">
                     →
                   </span>
                 </motion.button>

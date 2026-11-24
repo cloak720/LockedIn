@@ -69,12 +69,14 @@ function CoachSettings() {
       {byok && (
         <>
           <div>
-            <label className="lbl" htmlFor="apikey">
-              API key ·{' '}
-              <a href={prov.keyUrl} target="_blank" rel="noopener noreferrer">
-                get a free one →
+            <div className="spread" style={{ marginBottom: 8 }}>
+              <label className="lbl" htmlFor="apikey" style={{ margin: 0 }}>
+                API key
+              </label>
+              <a className="btn ghost sm" href={prov.keyUrl} target="_blank" rel="noopener noreferrer">
+                Get a free key ↗
               </a>
-            </label>
+            </div>
             <input
               id="apikey"
               className="input"
@@ -405,19 +407,18 @@ export default function Settings({ onRetake }: { onRetake: () => void }) {
         <Fold no="06" title="Help & privacy">
           <div className="col">
             <p className="small muted">
-              Struggling with your mental health or feeling unsafe? Find a free helpline in your country at{' '}
-              <a href="https://findahelpline.com" target="_blank" rel="noopener noreferrer">
-                findahelpline.com
+              Struggling with your mental health or feeling unsafe? Find a free helpline in your country. Groups like SMART
+              Recovery or SAA, or a therapist who works with compulsive sexual behaviour, can make a huge difference.
+            </p>
+            <p className="small muted">Everything stays on your phone, except chats you choose to send to the AI coach.</p>
+            <div className="btn-row">
+              <a className="btn sm" href="https://findahelpline.com" target="_blank" rel="noopener noreferrer">
+                Find a helpline ↗
               </a>
-              . Groups like SMART Recovery or SAA, or a therapist who works with compulsive sexual behaviour, can make a huge
-              difference.
-            </p>
-            <p className="small muted">
-              <a href="./privacy.html" target="_blank" rel="noopener">
-                Privacy policy
-              </a>{' '}
-              · Everything stays on your phone, except chats you choose to send to the AI coach.
-            </p>
+              <a className="btn ghost sm" href="./privacy.html" target="_blank" rel="noopener">
+                Privacy policy ↗
+              </a>
+            </div>
           </div>
         </Fold>
       </div>

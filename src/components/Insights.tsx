@@ -205,13 +205,18 @@ export default function Insights() {
                 {[...s.relapses].reverse().map((r) => (
                   <button
                     key={r.id}
-                    className="list-item"
-                    style={{ textAlign: 'left', border: 0, cursor: 'pointer' }}
+                    className="log-row"
+                    aria-expanded={open === r.id}
                     onClick={() => setOpen(open === r.id ? null : r.id)}
                   >
                     <div className="spread small">
                       <b>{new Date(r.at).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}</b>
-                      <span className="muted">after {fmtDuration(r.streakMs)}</span>
+                      <span className="row" style={{ gap: 8 }}>
+                        <span className="muted">after {fmtDuration(r.streakMs)}</span>
+                        <span className="go-dot" style={{ width: 26, height: 26, fontSize: 14 }} aria-hidden="true">
+                          {open === r.id ? '−' : '+'}
+                        </span>
+                      </span>
                     </div>
                     <p className="small muted">{r.triggers.map((t) => labelOf(TRIGGERS, t)).join(' · ')}</p>
                     {open === r.id && (

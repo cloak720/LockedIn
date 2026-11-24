@@ -36,9 +36,18 @@
   --f-display: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
   --f-mono: 'DM Mono', ui-monospace, 'Cascadia Mono', monospace;
 
+  /* elegance layer: soft surfaces, hairlines, gentle radii */
+  --surface: #f7f2e9;
+  --hair2: rgba(23, 21, 19, 0.26);
+  --soft: rgba(23, 21, 19, 0.06);
+  --soft2: rgba(23, 21, 19, 0.1);
+  --shadow: 0 1px 2px rgba(23, 21, 19, 0.04), 0 10px 28px -14px rgba(23, 21, 19, 0.22);
+  --r: 16px;
+  --r-sm: 12px;
+
   --gutter: 16px;
   --gap: 24px;
-  --pad: 18px;
+  --pad: 20px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
   color-scheme: light;
@@ -58,6 +67,11 @@
     --matcha: #8db265;
     --kin: #d6a54a;
     --ai: #7fa3cf;
+    --surface: #1b1816;
+    --hair2: rgba(236, 228, 212, 0.24);
+    --soft: rgba(236, 228, 212, 0.07);
+    --soft2: rgba(236, 228, 212, 0.12);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 12px 30px -14px rgba(0, 0, 0, 0.6);
     color-scheme: dark;
   }
 }
@@ -66,7 +80,7 @@
   :root {
     --gutter: 28px;
     --gap: 28px;
-    --pad: 22px;
+    --pad: 24px;
   }
 }
 
@@ -104,7 +118,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   z-index: 100;
-  opacity: 0.09;
+  opacity: 0.045;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
@@ -122,8 +136,8 @@ select {
 }
 
 :focus-visible {
-  outline: 2px dashed var(--shu);
-  outline-offset: 3px;
+  outline: 2px solid var(--shu);
+  outline-offset: 2px;
 }
 
 h1,
@@ -245,17 +259,20 @@ a {
    Building blocks
    ========================================================================== */
 .card {
-  background: var(--paper);
-  border: 1.5px solid var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: var(--r);
+  box-shadow: var(--shadow);
   padding: var(--pad);
   min-width: 0;
 }
 .card.tight {
-  padding: 14px;
+  padding: 14px 16px;
 }
 .card.inset {
   background: var(--paper2);
   border-color: transparent;
+  box-shadow: none;
 }
 
 /* section header: "01  TITLE ───────── aside" */
@@ -263,12 +280,13 @@ a {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   font-family: var(--f-mono);
-  font-size: 12px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   line-height: 1;
+  color: var(--muted);
 }
 .sec .no {
   color: var(--shu);
@@ -276,7 +294,7 @@ a {
 .sec .rule {
   flex: 1;
   height: 0;
-  border-top: 1px dotted var(--ink);
+  border-top: 1px solid var(--hair);
 }
 .sec .aside {
   flex: none;
@@ -286,8 +304,9 @@ a {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px;
-  border: 1px solid var(--ink);
+  padding: 5px 10px;
+  border: 1px solid var(--hair2);
+  border-radius: 999px;
   font-size: 11px;
   line-height: 1.2;
   white-space: nowrap;
@@ -317,6 +336,19 @@ hr.sep {
   border-bottom: 1px solid var(--hair);
   padding: 10px 0;
 }
+.log-row {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border: 1px solid var(--hair);
+  border-radius: var(--r-sm);
+  background: var(--paper);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.log-row:hover {
+  border-color: var(--hair2);
+}
 
 /* stamp: red rubber stamp with a word */
 .stamp {
@@ -334,33 +366,39 @@ hr.sep {
   box-shadow: inset 0 0 0 3px var(--shu), inset 0 0 0 5px var(--on-shu);
 }
 
-/* ---------- Buttons ---------- */
+/* ---------- Buttons ----------
+   Every action looks like a button: a filled or outlined surface with a
+   clear edge. "ghost" is a soft tinted pill, never bare text. */
 .btn {
-  border: 1.5px solid var(--ink);
-  border-radius: 0;
-  padding: 13px 18px;
+  border: 1px solid var(--hair2);
+  border-radius: var(--r-sm);
+  padding: 12px 20px;
   min-height: 48px;
-  font-family: var(--f-mono);
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-family: var(--f-body);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  text-decoration: none;
+  line-height: 1.2;
   cursor: pointer;
-  background: transparent;
+  background: var(--surface);
+  color: var(--ink);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   text-align: center;
-  transition: background 0.12s, color 0.12s;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
   user-select: none;
 }
 .btn:hover {
-  background: var(--ink);
-  color: var(--paper);
+  border-color: var(--ink);
+  box-shadow: 0 4px 14px -8px rgba(23, 21, 19, 0.35);
 }
 .btn.primary {
   background: var(--ink);
+  border-color: var(--ink);
   color: var(--paper);
 }
 .btn.primary:hover,
@@ -381,27 +419,33 @@ hr.sep {
   color: var(--paper);
 }
 .btn.ghost {
+  background: var(--soft);
   border-color: transparent;
 }
 .btn.ghost:hover {
-  border-color: var(--ink);
+  background: var(--soft2);
+  border-color: var(--hair2);
+  box-shadow: none;
 }
 .btn.block {
   width: 100%;
 }
 .btn.big {
   min-height: 56px;
-  font-size: 16px;
+  font-size: 17px;
+  border-radius: var(--r);
 }
 .btn.sm {
-  min-height: 36px;
-  padding: 6px 12px;
-  font-size: 12px;
+  min-height: 38px;
+  padding: 8px 14px;
+  font-size: 13px;
+  border-radius: 10px;
 }
 .btn:disabled,
 .btn:disabled:hover {
-  opacity: 0.35;
+  opacity: 0.4;
   cursor: not-allowed;
+  box-shadow: none;
 }
 .btn.primary:disabled:hover {
   background: var(--ink);
@@ -414,9 +458,17 @@ hr.sep {
   border-color: var(--shu);
   color: var(--on-shu);
 }
-.btn:not(.primary):not(.danger):not(.mint):disabled:hover {
-  background: transparent;
-  color: inherit;
+.btn:not(.primary):not(.danger):not(.mint):not(.ghost):disabled:hover {
+  border-color: var(--hair2);
+}
+.btn.ghost:disabled:hover {
+  background: var(--soft);
+  border-color: transparent;
+}
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 /* ---------- Chips / options ---------- */
@@ -426,37 +478,51 @@ hr.sep {
   gap: 8px;
 }
 .chip {
-  border: 1px solid var(--ink);
-  background: transparent;
-  border-radius: 0;
-  padding: 7px 12px;
+  border: 1px solid var(--hair2);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 8px 14px;
+  min-height: 38px;
   cursor: pointer;
   font-size: 14px;
   user-select: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.chip:hover {
+  border-color: var(--ink);
 }
 .chip.on {
   background: var(--ink);
+  border-color: var(--ink);
   color: var(--paper);
 }
 
+/* choice rows: each one is a clear tappable surface with a radio dot */
 .option {
   width: 100%;
   text-align: left;
   display: flex;
   align-items: center;
   gap: 14px;
-  min-height: 56px;
-  padding: 12px 8px;
-  border: 0;
-  border-bottom: 1px solid var(--hair);
-  background: transparent;
+  min-height: 58px;
+  padding: 14px 16px;
+  border: 1px solid var(--hair2);
+  border-radius: var(--r-sm);
+  background: var(--surface);
   cursor: pointer;
   font-size: 17px;
   position: relative;
-  transition: padding 0.15s;
+  transition: border-color 0.15s, background 0.15s;
 }
-.option:first-child {
-  border-top: 1px solid var(--hair);
+.option::after {
+  content: '';
+  flex: none;
+  margin-left: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid var(--hair2);
+  transition: border 0.15s, background 0.15s;
 }
 .option .emo {
   font-size: 22px;
@@ -465,20 +531,15 @@ hr.sep {
   text-align: center;
 }
 .option:hover {
-  padding-left: 14px;
+  border-color: var(--ink);
 }
 .option.on {
-  padding-left: 20px;
-  color: var(--shu);
+  border-color: var(--shu);
+  background: var(--shu-soft);
 }
-.option.on::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 10px;
-  bottom: 10px;
-  width: 6px;
-  background: var(--shu);
+.option.on::after {
+  border: 6px solid var(--shu);
+  background: var(--on-shu);
 }
 
 /* ---------- Inputs ---------- */
@@ -488,15 +549,16 @@ select.input {
   width: 100%;
   min-height: 48px;
   padding: 12px 14px;
-  border-radius: 0;
-  border: 1.5px solid var(--ink);
-  background: var(--paper);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--hair2);
+  background: var(--surface);
   outline: none;
   resize: vertical;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 .input:focus {
   border-color: var(--shu);
-  box-shadow: 4px 4px 0 var(--shu);
+  box-shadow: 0 0 0 3px var(--shu-soft);
 }
 input[type='range'] {
   width: 100%;
@@ -512,12 +574,14 @@ input[type='checkbox'] {
 /* ---------- Progress ---------- */
 .bar {
   height: 8px;
-  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: var(--soft2);
   overflow: hidden;
 }
 .bar > i {
   display: block;
   height: 100%;
+  border-radius: 999px;
   background: var(--ink);
 }
 
@@ -532,8 +596,10 @@ input[type='checkbox'] {
   grid-template-columns: repeat(4, 1fr);
   max-width: 100%;
   padding: 4px max(var(--gutter), calc((100% - 608px) / 2)) calc(4px + var(--safe-b));
-  background: var(--paper);
-  border-top: 1.5px solid var(--ink);
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid var(--hair);
 }
 .tab {
   border: 0;
@@ -564,10 +630,14 @@ input[type='checkbox'] {
   position: absolute;
   top: 0;
   left: 50%;
-  width: 24px;
+  width: 28px;
   height: 3px;
-  margin-left: -12px;
+  margin-left: -14px;
+  border-radius: 0 0 3px 3px;
   background: var(--shu);
+}
+.tab:hover .ico {
+  color: var(--shu);
 }
 
 /* ---------- Overlays ---------- */
@@ -596,8 +666,9 @@ input[type='checkbox'] {
 }
 
 .banner {
-  padding: 12px 14px;
-  border-left: 6px solid var(--kin);
+  padding: 14px 16px;
+  border-left: 4px solid var(--kin);
+  border-radius: var(--r-sm);
   background: var(--paper2);
   font-size: 14px;
 }
@@ -615,9 +686,11 @@ input[type='checkbox'] {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 10px 14px;
-  border: 1.5px solid var(--ink);
-  border-left: 10px solid var(--ink);
+  padding: 12px 16px;
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-left: 4px solid var(--ink);
+  border-radius: var(--r-sm);
 }
 .strip.red {
   border-left-color: var(--shu);
@@ -643,6 +716,7 @@ input[type='checkbox'] {
 }
 .heat .cell {
   aspect-ratio: 1.6;
+  border-radius: 4px;
   background: var(--paper2);
 }
 .heat .lab {
@@ -665,16 +739,20 @@ input[type='checkbox'] {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
   font-size: 15px;
+  border-radius: 18px;
 }
 .msg.me {
   align-self: flex-end;
   background: var(--ink);
   color: var(--paper);
+  border-bottom-right-radius: 6px;
 }
 .msg.bot {
   align-self: flex-start;
-  border: 1px solid var(--ink);
-  border-left: 6px solid var(--shu);
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-bottom-left-radius: 6px;
+  box-shadow: inset 3px 0 0 var(--shu);
 }
 .composer {
   position: sticky;
@@ -824,8 +902,8 @@ input[type='checkbox'] {
   display: flex;
   justify-content: space-between;
   gap: 10px;
-  padding-top: 8px;
-  border-top: 1.5px solid var(--ink);
+  padding-top: 10px;
+  border-top: 1px solid var(--hair2);
   font-family: var(--f-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
@@ -864,6 +942,7 @@ input[type='checkbox'] {
 }
 .tier-meter i {
   height: 10px;
+  border-radius: 2px;
   background: var(--hair);
   transform-origin: bottom;
 }
@@ -916,7 +995,9 @@ input[type='checkbox'] {
 }
 .ladder li.now {
   background: var(--shu-soft);
-  box-shadow: inset 6px 0 0 var(--shu);
+  box-shadow: inset 4px 0 0 var(--shu);
+  border-radius: 8px;
+  border-color: transparent;
   padding-left: 0;
 }
 .ladder li.now .t {
@@ -937,17 +1018,19 @@ input[type='checkbox'] {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
-  padding: 14px 16px 14px 14px;
+  padding: 16px 18px 16px 16px;
   border: 0;
+  border-radius: var(--r);
   background: var(--ink);
   color: var(--paper);
   cursor: pointer;
   text-align: left;
-  transition: transform 0.12s, box-shadow 0.12s;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s, box-shadow 0.15s;
 }
 .jail:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 4px 4px 0 var(--shu);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px -14px var(--shu);
 }
 .jail-text b {
   display: block;
@@ -967,8 +1050,16 @@ input[type='checkbox'] {
   opacity: 0.75;
 }
 .jail .arrow {
-  font-family: var(--f-display);
-  font-size: 28px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--shu);
+  color: var(--on-shu);
+  font-family: var(--f-body);
+  font-weight: 700;
+  font-size: 20px;
   line-height: 1;
 }
 
@@ -981,8 +1072,9 @@ input[type='checkbox'] {
 .mood {
   height: 52px;
   padding: 0 2px;
-  border: 1.5px solid var(--ink);
-  background: transparent;
+  border: 1px solid var(--hair2);
+  border-radius: var(--r-sm);
+  background: var(--surface);
   font-family: var(--f-display);
   font-size: clamp(12px, 3.5vw, 15px);
   text-transform: uppercase;
@@ -1031,8 +1123,8 @@ input[type='checkbox'] {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 10px 0;
-  border-top: 1px solid var(--ink);
+  padding: 12px 0;
+  border-top: 1px solid var(--hair2);
   min-width: 0;
 }
 .stat span {
@@ -1055,48 +1147,59 @@ input[type='checkbox'] {
   line-height: 1.45;
 }
 
-/* quiet, but always findable */
+/* quiet, but always findable: a real button row, not a text link */
 .slip {
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 4px;
-  padding: 14px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
   text-align: left;
-  background: transparent;
-  border: 0;
-  border-top: 1px solid var(--hair);
+  background: var(--surface);
+  border: 1px solid var(--hair2);
+  border-radius: var(--r-sm);
   cursor: pointer;
-  font-family: var(--f-mono);
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  transition: border-color 0.15s;
 }
 .slip:hover {
-  color: var(--shu);
+  border-color: var(--ink);
+}
+.slip b {
+  display: block;
+  font-size: 15px;
+}
+.slip small {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* circular arrow affordance used on tappable rows */
+.go-dot {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--soft);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  transition: background 0.15s, color 0.15s;
+}
+.slip:hover .go-dot,
+.plist.actions > button:hover .go-dot {
+  background: var(--ink);
+  color: var(--paper);
 }
 
 /* borderless content section (less boxy than .card) */
 .section {
   min-width: 0;
 }
-.link-btn {
-  margin-top: 10px;
-  padding: 6px 0;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  font-family: var(--f-mono);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.link-btn:hover {
-  color: var(--shu);
+.section > .btn {
+  margin-top: 12px;
 }
 
 .greet h2 {
@@ -1114,23 +1217,31 @@ input[type='checkbox'] {
   font-size: clamp(36px, 9vw, 56px);
 }
 
-/* collapsible sections (Settings) */
+/* collapsible sections (Settings): each one a card with a +/− button */
 .folds {
   display: flex;
   flex-direction: column;
-  border-top: 1.5px solid var(--ink);
+  gap: 12px;
 }
 .fold {
-  border-bottom: 1.5px solid var(--ink);
+  background: var(--surface);
+  border: 1px solid var(--hair);
+  border-radius: var(--r);
+  padding: 0 18px;
+  transition: border-color 0.15s;
+}
+.fold:hover,
+.fold[open] {
+  border-color: var(--hair2);
 }
 .fold > summary {
   list-style: none;
   display: grid;
-  grid-template-columns: 32px minmax(0, 1fr) auto 18px;
-  align-items: baseline;
+  grid-template-columns: 28px minmax(0, 1fr) auto 32px;
+  align-items: center;
   gap: 10px;
-  min-height: 56px;
-  padding: 16px 0;
+  min-height: 64px;
+  padding: 14px 0;
   cursor: pointer;
 }
 .fold > summary::-webkit-details-marker {
@@ -1160,18 +1271,25 @@ input[type='checkbox'] {
 }
 .fold .chev {
   position: relative;
-  width: 14px;
-  height: 14px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--soft);
   align-self: center;
+  transition: background 0.15s;
+}
+.fold > summary:hover .chev {
+  background: var(--soft2);
 }
 .fold .chev::before,
 .fold .chev::after {
   content: '';
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 6px;
+  left: 10px;
+  right: 10px;
+  top: 15px;
   height: 2px;
+  border-radius: 1px;
   background: var(--ink);
   transition: transform 0.15s;
 }
@@ -1182,7 +1300,7 @@ input[type='checkbox'] {
   transform: rotate(0deg);
 }
 .fold-body {
-  padding: 0 0 22px 42px;
+  padding: 4px 0 22px 38px;
 }
 @media (max-width: 420px) {
   .fold-body {
@@ -1197,7 +1315,8 @@ input[type='checkbox'] {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 14px;
-  padding: 12px 14px;
+  padding: 14px 16px;
+  border-radius: var(--r-sm);
   background: var(--paper2);
 }
 
@@ -1249,10 +1368,26 @@ input[type='checkbox'] {
   transition: color 0.15s;
 }
 .plist > *:last-child {
-  border-bottom: 1px solid var(--ink);
+  border-bottom: 1px solid var(--hair2);
 }
-.plist > button:hover {
-  color: var(--shu);
+.plist > div {
+  border-top-color: var(--hair2);
+}
+/* action lists (panic tools): every row is its own tappable card */
+.plist.actions {
+  gap: 10px;
+}
+.plist.actions > button {
+  grid-template-columns: 32px minmax(0, 1fr) 34px;
+  align-items: center;
+  padding: 14px 14px 14px 16px;
+  border: 1px solid var(--hair2);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.plist.actions > button:hover {
+  border-color: var(--ink);
 }
 .plist .n {
   font-family: var(--f-mono);
@@ -1318,7 +1453,14 @@ input[type='checkbox'] {
   position: relative;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border: 1.5px solid var(--ink);
+  border: 1px solid var(--hair2);
+  border-radius: var(--r-sm);
+}
+.cat-bands > .band:first-child {
+  border-radius: var(--r-sm) 0 0 var(--r-sm);
+}
+.cat-bands > .band:nth-child(4) {
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
 }
 .band {
   min-height: 46px;
@@ -1388,7 +1530,8 @@ input[type='checkbox'] {
 .arena {
   position: relative;
   height: min(380px, 52vh);
-  border: 1.5px solid var(--ink);
+  border: 1px solid var(--hair2);
+  border-radius: var(--r);
   overflow: hidden;
   touch-action: manipulation;
   background-image: linear-gradient(var(--hair) 1px, transparent 1px), linear-gradient(90deg, var(--hair) 1px, transparent 1px);
